@@ -6,6 +6,7 @@ import {
   signOut,
   onAuthStateChanged,
 } from "firebase/auth";
+import { get, getDatabase, ref } from "firebase/database";
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -15,28 +16,37 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-
 const provider = new GoogleAuthProvider();
 const auth = getAuth();
+const database = getDatabase(app);
 
-export const login = async () => {
-  return signInWithPopup(auth, provider)
-    .then((result) => {
-      return result.user;
-    })
-    .catch(console.error);
+export const login = () => {
+  signInWithPopup(auth, provider).catch(console.error);
 };
 
-export const logout = async () => {
-  return signOut(auth)
-    .then(() => {
-      return null;
-    })
-    .catch(console.error);
+export const logout = () => {
+  signOut(auth).catch(console.error);
 };
 
 export const onLoginStateChange = (callback) => {
-  onAuthStateChanged(auth, (user) => {
-    callback(user);
+  onAuthStateChanged(auth, async (user) => {
+    const updateUser = user ? await adminUser(user) : null;
+    localStorage.setItem("user", JSON.stringify(updateUser));
+    callback(updateUser);
   });
+};
+
+const adminUser = async (user) => {
+  return get(ref(database, "adminList"))
+    .then((snapshot) => {
+      if (snapshot.exists()) {
+        const isAdmin = snapshot.val().includes(user.uid);
+
+        return { ...user, isAdmin };
+      }
+      return user;
+    })
+    .catch((error) => {
+      console.error(error);
+    });
 };
