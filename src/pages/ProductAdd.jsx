@@ -7,7 +7,6 @@ function ProductAdd() {
   const [product, setProduct] = useState({});
   const [file, setFile] = useState();
   const [isUploading, setIsUploading] = useState(false);
-  const [success, setSuccess] = useState();
   const { addProduct } = useProducts();
 
   const inputHandler = (e) => {
@@ -27,21 +26,21 @@ function ProductAdd() {
           { product, url },
           {
             onSuccess: () => {
-              setSuccess("성공적으로 제품이 추가되었습니다.");
-              setTimeout(() => {
-                setSuccess(null);
-              }, 4000);
+              alert("성공적으로 제품이 추가되었습니다.");
             },
           }
         );
       })
-      .finally(() => setIsUploading(false));
+      .finally(() => {
+        setProduct({});
+        setFile(null);
+        setIsUploading(false);
+      });
   };
 
   return (
     <section className="w-full text-center flex flex-col">
       <h2 className="text-2xl font-bold my-4">새로운 제품 등록</h2>
-      {success && <p className="my-2">✅ {success}</p>}
       <div className="flex flex-col justify-center items-center lg:flex-row lg:justify-center lg:items-start py-3">
         {file ? (
           <div className="w-96 h-96 overflow-hidden relative">
