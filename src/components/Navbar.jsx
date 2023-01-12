@@ -3,6 +3,24 @@ import { Link } from "react-router-dom";
 import { BsShop, BsPencil, BsCart } from "react-icons/bs";
 import Button from "./Button";
 import { useAuthContext } from "../context/AuthContext";
+import useCart from "../hooks/useCart";
+
+function CartStatus() {
+  const {
+    cartQuery: { data: products },
+  } = useCart();
+
+  return (
+    <div className="relative">
+      <BsCart className="text-2xl" />
+      {products && (
+        <p className="w-4 h-4 text-xs text-center bg-brand text-white font-bold rounded-full absolute -top-1 -right-2">
+          {products.length}
+        </p>
+      )}
+    </div>
+  );
+}
 
 function User({ user: { photoURL, displayName } }) {
   return (
@@ -34,7 +52,7 @@ function Navbar() {
         {user ? (
           <>
             <Link to="/cart" className="text-2xl">
-              <BsCart />
+              <CartStatus />
             </Link>
             {user.isAdmin && (
               <Link to="/product/add" className="text-2xl">
