@@ -6,7 +6,8 @@ import {
   signOut,
   onAuthStateChanged,
 } from "firebase/auth";
-import { get, getDatabase, ref } from "firebase/database";
+import { get, getDatabase, ref, set } from "firebase/database";
+import { v4 } from "uuid";
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -50,3 +51,23 @@ const adminUser = async (user) => {
       console.error(error);
     });
 };
+
+export async function getProducts() {
+  return get(ref(database, "products")).then((snapshot) => {
+    if (snapshot.exists()) {
+      return Object.values(snapshot.val());
+    }
+    return [];
+  });
+}
+
+export async function addNewProduct(product, image) {
+  const id = v4();
+  return set(ref(database, `products/${id}`), {
+    ...product,
+    id,
+    price: parseInt(product.price),
+    image,
+    options: product.options.split(","),
+  });
+}
