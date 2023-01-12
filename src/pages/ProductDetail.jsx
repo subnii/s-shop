@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
 import Button from "../components/Button";
 import useCart from "../hooks/useCart";
+import { useAuthContext } from "../context/AuthContext";
 
 function ProductDetail() {
+  const { user, login } = useAuthContext();
   const { addOrUpdateItem } = useCart();
   const {
     state: {
@@ -17,23 +19,27 @@ function ProductDetail() {
 
   const selectHandler = (e) => setSelected(e.target.value);
   const clickHandler = (e) => {
-    let product = { id, image, title, price, option: selected };
+    if (user) {
+      let product = { id, image, title, price, option: selected };
 
-    const hasCartProduct = cartProducts.filter(
-      (cartProduct) => cartProduct.id === product.id
-    );
+      const hasCartProduct = cartProducts.filter(
+        (cartProduct) => cartProduct.id === product.id
+      );
 
-    if (hasCartProduct.length > 0) {
-      product.quantity = hasCartProduct[0].quantity + 1;
+      if (hasCartProduct.length > 0) {
+        product.quantity = hasCartProduct[0].quantity + 1;
+      } else {
+        product.quantity = 1;
+      }
+
+      addOrUpdateItem.mutate(product, {
+        onSuccess: () => {
+          alert("장바구니에 추가되었습니다.");
+        },
+      });
     } else {
-      product.quantity = 1;
+      login();
     }
-
-    addOrUpdateItem.mutate(product, {
-      onSuccess: () => {
-        alert("장바구니에 추가되었습니다.");
-      },
-    });
   };
 
   return (
@@ -65,7 +71,11 @@ function ProductDetail() {
                 ))}
             </select>
           </div>
-          <Button text="장바구니에 추가" onClick={clickHandler} />
+
+          <Button
+            text={user ? "장바구니에 추가" : "로그인 하기"}
+            onClick={clickHandler}
+          />
         </div>
       </section>
     </div>
