@@ -20,3 +20,11 @@ code {
 #root {
   @apply w-full max-w-screen-2xl;
 }
+
+input {
+  @apply p-2 outline-none border border-gray-300 rounded-lg my-1 w-full;
+}
+
+* {
+  font-family: "Lato";
+}
