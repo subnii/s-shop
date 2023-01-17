@@ -14,6 +14,22 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 16
+      - name: access to secrets
+          run: |
+            echo "REACT_APP_FIREBASE_API_KEY=$REACT_APP_FIREBASE_API_KEY" >> .env.local
+            echo "REACT_APP_FIREBASE_AUTH_DOMAIN=$REACT_APP_FIREBASE_AUTH_DOMAIN" >> .env.local
+            echo "REACT_APP_FIREBASE_DB_URL=$REACT_APP_FIREBASE_DB_URL" >> .env.local
+            echo "REACT_APP_FIREBASE_PROJECT_ID=$REACT_APP_FIREBASE_PROJECT_ID" >> .env.local
+            echo "REACT_APP_CLOUDINARY_PRESET=$REACT_APP_CLOUDINARY_PRESET" >> .env.local
+            echo "REACT_APP_CLOUDINARY_URL=$REACT_APP_CLOUDINARY_URL" >> .env.local
+          env:
+            REACT_APP_FIREBASE_API_KEY: ${{ secrets.REACT_APP_FIREBASE_API_KEY }}
+            REACT_APP_FIREBASE_AUTH_DOMAIN: ${{ secrets.REACT_APP_FIREBASE_AUTH_DOMAIN }}
+            REACT_APP_FIREBASE_DB_URL: ${{ secrets.REACT_APP_FIREBASE_DB_URL }}
+            REACT_APP_FIREBASE_PROJECT_ID: ${{ secrets.REACT_APP_FIREBASE_PROJECT_ID }}
+            REACT_APP_CLOUDINARY_PRESET: ${{ secrets.REACT_APP_CLOUDINARY_PRESET }}
+            REACT_APP_CLOUDINARY_URL: ${{ secrets.REACT_APP_CLOUDINARY_URL }}
+      - run: yarn && yarn build && yarn add firebase-tools@11.20.0
       - run: yarn && yarn build && yarn add firebase-tools@11.20.0
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
@@ -21,10 +37,4 @@ jobs:
           firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_FIR_SHOP_E5E79 }}"
           channelId: live
           projectId: fir-shop-e5e79
-        env:
-          REACT_APP_FIREBASE_API_KEY: ${{ secrets.REACT_APP_FIREBASE_API_KEY }}
-          REACT_APP_FIREBASE_AUTH_DOMAIN: ${{ secrets.REACT_APP_FIREBASE_AUTH_DOMAIN }}
-          REACT_APP_FIREBASE_DB_URL: ${{ secrets.REACT_APP_FIREBASE_DB_URL }}
-          REACT_APP_FIREBASE_PROJECT_ID: ${{ secrets.REACT_APP_FIREBASE_PROJECT_ID }}
-          REACT_APP_CLOUDINARY_PRESET: ${{ secrets.REACT_APP_CLOUDINARY_PRESET }}
-          REACT_APP_CLOUDINARY_URL: ${{ secrets.REACT_APP_CLOUDINARY_URL }}
+        
