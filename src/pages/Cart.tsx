@@ -9,15 +9,14 @@ import {
 import { BsTrash } from "react-icons/bs";
 import Button from "../components/Button";
 import { useIamportPayment } from "../apis/iamport";
+import { ICartItemProps } from "../types/productVo";
 
 const SHIPPING = 3000;
 const ICON_CLASS =
   "transition-all cursor-pointer hover:text-brand hover:scale-105 mx-1";
 
-function CartItem({
-  product,
-  product: { id, image, title, option, quantity, price },
-}) {
+function CartItem({ product }: ICartItemProps) {
+  const { id, quantity, image, title, option, price } = product;
   const { addOrUpdateItem, removeItem } = useCart();
   const minusHandler = () => {
     if (quantity < 2) return;
@@ -48,11 +47,13 @@ function CartItem({
   );
 }
 
-function PriceCard({ text, price }) {
+function PriceCard({ text, price }: { text: string; price: number }) {
   return (
     <div className="mx-2 rounded-2xl text-center text-lg">
       <p>{text}</p>
-      <p className="font-bold text-brand text-lg md:text-xl">₩{price}</p>
+      <p className="font-bold text-brand text-lg md:text-xl">
+        ₩ {price.toLocaleString()}
+      </p>
     </div>
   );
 }
@@ -70,7 +71,7 @@ function Cart() {
   const totalPrice =
     products &&
     products.reduce(
-      (prev, current) => prev + parseInt(current.price) * current.quantity,
+      (prev, current) => prev + current.price * current.quantity,
       0
     );
 
@@ -88,19 +89,22 @@ function Cart() {
               ))}
           </ul>
           <div className="flex justify-between items-center mb-6 p-2 md:px-8 lg:px-16 border border-gray-300">
-            <PriceCard text="상품 총액" price={totalPrice.toLocaleString()} />
+            <PriceCard text="상품 총액" price={totalPrice ? totalPrice : 0} />
             <AiOutlinePlusCircle className="shrink-0" />
-            <PriceCard text="배송액" price={SHIPPING.toLocaleString()} />
+            <PriceCard text="배송액" price={SHIPPING} />
             <FaEquals className="shrink-0" />
             <PriceCard
               text="총가격"
-              price={(totalPrice + SHIPPING).toLocaleString()}
+              price={totalPrice ? totalPrice + SHIPPING : SHIPPING}
             />
           </div>
           <div className="flex justify-end">
             <Button
               text="주문하기"
-              onClick={iamportPayment.bind(null, totalPrice + SHIPPING)}
+              onClick={iamportPayment.bind(
+                null,
+                totalPrice ? totalPrice + SHIPPING : SHIPPING
+              )}
             />
           </div>
         </>

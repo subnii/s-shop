@@ -1,17 +1,22 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { addOrUpdateToCart, getCart, removeFromCart } from "../apis/firebase";
 import { useAuthContext } from "../context/AuthContext";
+import { ICartProduct } from "../types/productVo";
 
 export default function useCart() {
   const { uid } = useAuthContext();
   const queryClient = useQueryClient();
 
-  const cartQuery = useQuery(["carts", uid || ""], () => getCart(uid), {
-    enabled: !!uid,
-  });
+  const cartQuery = useQuery<Array<ICartProduct>>(
+    ["carts", uid || ""],
+    () => getCart(uid),
+    {
+      enabled: !!uid,
+    }
+  );
 
   const addOrUpdateItem = useMutation(
-    (product) => addOrUpdateToCart(uid, product),
+    (product: ICartProduct) => addOrUpdateToCart(uid, product),
     {
       onSuccess: () => {
         queryClient.invalidateQueries(["carts", uid]);
@@ -19,7 +24,7 @@ export default function useCart() {
     }
   );
 
-  const removeItem = useMutation((id) => removeFromCart(uid, id), {
+  const removeItem = useMutation((id: string) => removeFromCart(uid, id), {
     onSuccess: () => {
       queryClient.invalidateQueries(["carts", uid]);
     },

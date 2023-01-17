@@ -26,6 +26,7 @@ export const login = () => {
 };
 
 export const logout = () => {
+  console.log("로그아웃눌럿ㅅ다");
   signOut(auth).catch(console.error);
 };
 

@@ -3,33 +3,46 @@ import { useLocation } from "react-router-dom";
 import Button from "../components/Button";
 import useCart from "../hooks/useCart";
 import { useAuthContext } from "../context/AuthContext";
+import { ICartProduct, IProduct } from "../types/productVo";
 
 function ProductDetail() {
   const { user, login } = useAuthContext();
   const { addOrUpdateItem } = useCart();
   const {
-    state: {
-      product: { id, image, title, description, category, price, options },
-    },
+    state: { product },
   } = useLocation();
+  const { id, image, title, description, category, price, options } =
+    product as IProduct;
+
   const [selected, setSelected] = useState(options && options[0]);
   const {
     cartQuery: { data: cartProducts },
   } = useCart();
 
-  const selectHandler = (e) => setSelected(e.target.value);
-  const clickHandler = (e) => {
+  const selectHandler = (e: React.ChangeEvent<HTMLSelectElement>) =>
+    setSelected(e.target.value);
+
+  const clickHandler = () => {
     if (user) {
-      let product = { id, image, title, price, option: selected };
+      let product: ICartProduct = {
+        id,
+        image,
+        title,
+        price,
+        option: selected,
+        quantity: 0,
+      };
 
-      const hasCartProduct = cartProducts.filter(
-        (cartProduct) => cartProduct.id === product.id
-      );
+      if (cartProducts && cartProducts?.length > 0) {
+        const hasCartProduct = cartProducts.filter(
+          (cartProduct) => cartProduct.id === product.id
+        );
 
-      if (hasCartProduct.length > 0) {
-        product.quantity = hasCartProduct[0].quantity + 1;
-      } else {
-        product.quantity = 1;
+        if (hasCartProduct.length > 0) {
+          product.quantity = hasCartProduct[0].quantity + 1;
+        } else {
+          product.quantity = 1;
+        }
       }
 
       addOrUpdateItem.mutate(product, {

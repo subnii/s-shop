@@ -1,12 +1,11 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import useProducts from "../hooks/useProducts";
+import { IProduct } from "../types/productVo";
 
-function ProductCard({
-  product,
-  product: { id, image, title, category, price },
-}) {
+function ProductCard({ product }: { product: IProduct }) {
   const navigate = useNavigate();
+  const { id, image, title, category, price } = product;
   return (
     <li
       onClick={() => {
