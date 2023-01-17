@@ -13,6 +13,7 @@ jobs:
         with:
           node-version: 16
       - run: yarn && yarn build
+      - run: yarn add firebase-tools
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
